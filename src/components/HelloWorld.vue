@@ -2,9 +2,14 @@
   <div>
       <div class="wrap">
         <div class="wrap_flexxx" v-for="(diff, index) in difficulty" :key="index">
-          <input type="radio" :value="choosenTiming" name="diffValues" @input="chooseDificulty(diff.timing)" class="radioBtn"/>{{ diff.name}}
+          <input type="radio"
+                :value="choosenTiming"
+                name="diffValues"
+                :class="[gameStart ? 'disabled' : '']"
+                @input="chooseDificulty(diff.timing)"
+                class="radioBtn"/>{{ diff.name}}
         </div>
-        <button type="button" class="btnStart" @click="startGame()">Start Game</button>
+        <input type="button" class="btnStart" @click="startGame()" :value="[ gameStart ? 'Stop' : 'Start Game']">
         <!-- Random numbers-->
         <span v-if="choosenNumber">{{ choosenNumber }}</span>
       </div>
@@ -40,28 +45,33 @@ export default {
       numbersArray: null,
       choosenTiming: null,
       choosenNumber: null,
+      gameStart: false,
+      intervalID: null,
     }
   },
   created: function () {
     this.lettersArray = [...'abcdefghijklmnopqrstuvwxyz'];
     this.numbersArray = [...Array(26).keys()];
-    console.log(this.numbersArray);
-
   },
   methods: {
     chooseDificulty(timing) {
       this.choosenTiming = timing;
     },
     startGame() {
-      const self = this;
-        setInterval(function() {
-            self.choosenNumber = self.numbersArray[Math.floor(Math.random()*self.numbersArray.length)];
-            //filter array remove duplicates
-      }, self.choosenTiming);
-    },
-    stopGame() {
+      if(!this.gameStart) {
+        //filter array remove duplicates
+        this.gameStart = true;
+        const self = this;
 
-    }
+        this.intervalID = setInterval(function() {
+            self.choosenNumber = self.numbersArray[Math.floor(Math.random()*26)];
+        }, this.choosenTiming);
+      }
+      else {
+        clearInterval(this.intervalID);
+        this.gameStart = false;
+      }
+    },
   }
 };
 </script>
@@ -74,5 +84,9 @@ export default {
 }
 .upperText {
   text-transform: uppercase;
+}
+.radioBtn.disabled {
+  pointer-events: none;
+
 }
 </style>
