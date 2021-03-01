@@ -9,13 +9,15 @@
                 @input="chooseDificulty(diff.timing)"
                 class="radioBtn"/>{{ diff.name}}
         </div>
-        <input type="button" class="btnStart" @click="startGame()" :value="[ gameStart ? 'Stop' : 'Start Game']">
+
+        <input type="button" :disabled="choosenTiming === null" class="btnStart" @click="startGame()" :value="[ gameStart ? 'Stop' : 'Start Game']">
         <!-- Random numbers-->
-        <span v-if="choosenNumber">{{ choosenNumber }}</span>
+        <span v-if="choosenNumber">{{ choosenNumber }}</span><br>
+        <input type="text" placeholder="Input letter" v-model="typedLetter" @input="checkScore($event)"/>
       </div>
       <div class="wrap_flex" v-for="(letter, letterIndex) in lettersArray" :key="letterIndex" :class="[]">
           <div>
-            <span class="upperText">{{ letter }}</span> (<span > {{ letterIndex+1 }}</span>)
+            <span :class="[greenLetter[letterIndex] === letterIndex+1 ? 'green' : '', redLetter[letterIndex] === letterIndex+1 ? 'red' : '']" class="upperText">{{ letter }}</span> (<span > {{ letterIndex+1 }}</span>)
           </div>
       </div>
   </div>
@@ -47,11 +49,16 @@ export default {
       choosenNumber: null,
       gameStart: false,
       intervalID: null,
+      typedLetter: null,
+      redLetter: [],
+      greenLetter: [],
     }
   },
   created: function () {
     this.lettersArray = [...'abcdefghijklmnopqrstuvwxyz'];
     this.numbersArray = [...Array(26).keys()];
+    console.log(this.numbersArray);
+    console.log(this.lettersArray);
   },
   methods: {
     chooseDificulty(timing) {
@@ -72,6 +79,19 @@ export default {
         this.gameStart = false;
       }
     },
+    checkScore(event) {
+      this.typedLetter = event.target.value;
+      const foundLetter = this.lettersArray.find(element => element === this.typedLetter.toLowerCase());
+      const indexLett = this.lettersArray.findIndex(element => element === foundLetter);
+      if(foundLetter)  {
+        if(indexLett === this.choosenNumber) console.log('Score!!!', indexLett);
+        this.$set(this.greenLetter, indexLett, !this.greenLetter[indexLett]);
+        console.log(this.greenLetter);
+
+      }
+      else this.$set(this.redLetter, indexLett, !this.redLetter[indexLett]);
+
+    }
   }
 };
 </script>
@@ -88,5 +108,11 @@ export default {
 .radioBtn.disabled {
   pointer-events: none;
 
+}
+.green {
+  color: green;
+}
+.red {
+  color: red;
 }
 </style>
