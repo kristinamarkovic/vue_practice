@@ -131,6 +131,8 @@ export default {
   background: white;
   display: block;
   margin: 0 auto;
+  position: relative;
+  top: 20px;
 }
 .btnStart:disabled:hover{
   cursor: default;
